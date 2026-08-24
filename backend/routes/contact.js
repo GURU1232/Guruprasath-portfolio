@@ -77,12 +77,20 @@ router.post("/", async (req, res) => {
       if (user && pass && pass !== "your_app_password_here") {
         console.log(`📧 Attempting to send email notification to ${process.env.CONTACT_RECEIVER || user}...`);
 
+        const smtpPort = Number(process.env.SMTP_PORT) || 587;
         const transporter = nodemailer.createTransport({
-          service: "gmail",
+          host: process.env.SMTP_HOST || "smtp.gmail.com",
+          port: smtpPort,
+          secure: smtpPort === 465, // false for 587 STARTTLS
+          requireTLS: smtpPort === 587,
           auth: {
             user: user,
             pass: pass,
           },
+          tls: {
+            rejectUnauthorized: false,
+          },
+          connectionTimeout: 12000,
         });
 
         const info = await transporter.sendMail({

@@ -133,7 +133,7 @@ export default function Experience() {
           </h2>
 
           {/* Mobile Swipe Hint */}
-          <Typography
+          {/* <Typography
             sx={{
               display: { xs: "block", sm: "none" },
               fontFamily: "var(--font-mono)",
@@ -146,7 +146,7 @@ export default function Experience() {
             }}
           >
             ← Swipe sideways to view all →
-          </Typography>
+          </Typography> */}
 
           {/* Timeline Rail (Draggable / Horizontal Scrollable on Mobile) */}
           <Box
