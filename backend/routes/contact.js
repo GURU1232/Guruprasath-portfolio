@@ -70,18 +70,58 @@ router.post("/", async (req, res) => {
   // 2. SEND EMAIL NOTIFICATION IN BACKGROUND
   (async () => {
     try {
+      const recipient = process.env.CONTACT_RECEIVER || process.env.SMTP_USER || "guruprasathk03@gmail.com";
+      const htmlBody = `
+        <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #3b82f6; margin-top: 0;">New Message via Portfolio</h2>
+          <p><strong>Name:</strong> ${name}</p>
+          <p><strong>Sender Email:</strong> <a href="mailto:${email}">${email}</a></p>
+          <p><strong>Message Description:</strong></p>
+          <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid #3b82f6; color: #1e293b; white-space: pre-wrap;">${message}</div>
+          <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+          <p style="font-size: 0.8rem; color: #94a3b8;">Received at: ${new Date().toLocaleString()}</p>
+        </div>
+      `;
+
+      // --- OPTION A: RESEND API (HTTPS PORT 443 - 100% UNBLOCKED ON RENDER) ---
+      if (process.env.RESEND_API_KEY) {
+        console.log(`🚀 Sending email via Resend HTTPS API to ${recipient}...`);
+        const resendRes = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${process.env.RESEND_API_KEY.trim()}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            from: "Portfolio Contact <onboarding@resend.dev>",
+            to: [recipient],
+            reply_to: email,
+            subject: `New Portfolio Message from ${name}`,
+            html: htmlBody,
+          }),
+        });
+        const resendData = await resendRes.json();
+        if (resendRes.ok) {
+          console.log(`✅ Email sent via Resend API! ID: ${resendData.id}`);
+          return;
+        } else {
+          console.error("❌ Resend API Error:", resendData);
+        }
+      }
+
+      // --- OPTION B: GMAIL / SMTP TRANSPORTER ---
       const user = process.env.SMTP_USER ? process.env.SMTP_USER.trim() : "";
       const rawPass = process.env.SMTP_PASS ? process.env.SMTP_PASS.trim() : "";
-      const pass = rawPass.replace(/\s+/g, ""); // strip spaces from Gmail App Password
+      const pass = rawPass.replace(/\s+/g, "");
 
       if (user && pass && pass !== "your_app_password_here") {
-        console.log(`📧 Attempting to send email notification to ${process.env.CONTACT_RECEIVER || user}...`);
+        console.log(`📧 Attempting to send email via SMTP to ${recipient}...`);
 
         const smtpPort = Number(process.env.SMTP_PORT) || 587;
         const transporter = nodemailer.createTransport({
           host: process.env.SMTP_HOST || "smtp.gmail.com",
           port: smtpPort,
-          secure: smtpPort === 465, // false for 587 STARTTLS
+          secure: smtpPort === 465,
           requireTLS: smtpPort === 587,
           auth: {
             user: user,
@@ -90,31 +130,21 @@ router.post("/", async (req, res) => {
           tls: {
             rejectUnauthorized: false,
           },
-          connectionTimeout: 12000,
+          connectionTimeout: 10000,
         });
 
         const info = await transporter.sendMail({
           from: `"Portfolio Contact Form" <${user}>`,
-          to: process.env.CONTACT_RECEIVER || user,
+          to: recipient,
           replyTo: email,
           subject: `New Portfolio Message from ${name}`,
           text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
-          html: `
-            <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px; max-width: 600px; margin: 0 auto;">
-              <h2 style="color: #3b82f6; margin-top: 0;">New Message via Portfolio</h2>
-              <p><strong>Name:</strong> ${name}</p>
-              <p><strong>Sender Email:</strong> <a href="mailto:${email}">${email}</a></p>
-              <p><strong>Message Description:</strong></p>
-              <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid #3b82f6; color: #1e293b; white-space: pre-wrap;">${message}</div>
-              <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
-              <p style="font-size: 0.8rem; color: #94a3b8;">Received at: ${new Date().toLocaleString()}</p>
-            </div>
-          `,
+          html: htmlBody,
         });
 
-        console.log(`✅ Email notification sent successfully! MessageId: ${info.messageId}`);
+        console.log(`✅ Email sent successfully via SMTP! MessageId: ${info.messageId}`);
       } else {
-        console.log("⚠️ SMTP credentials not fully configured in environment.");
+        console.log("⚠️ No active email credentials (RESEND_API_KEY or SMTP_PASS) configured.");
       }
     } catch (err) {
       console.error("❌ Email send error:", err.message);
