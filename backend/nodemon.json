@@ -1,0 +1,7 @@
+{
+  "ignore": [
+    "data/*",
+    "data/messages.json",
+    "firebase-service-account.json"
+  ]
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "id": "1787556641137",
+    "name": "Guruprasath Test",
+    "email": "testvisitor@gmail.com",
+    "message": "Testing the contact form message storage, email delivery, and FCM notification system!",
+    "receivedAt": "2026-08-24T07:30:41.137Z"
+  },
+  {
+    "id": "1787556714134",
+    "name": "Guruprasath Test",
+    "email": "testvisitor@gmail.com",
+    "message": "Hello, testing message persistence and notifications!",
+    "receivedAt": "2026-08-24T07:31:54.134Z"
+  },
+  {
+    "id": "1787557144042",
+    "name": "Vignesh",
+    "email": "vignesh@gmail.com",
+    "message": "Test mail to view the log for the fcm notification and the mail delivery.\n\nthis was the test mail",
+    "receivedAt": "2026-08-24T07:39:04.042Z"
+  },
+  {
+    "id": "1787561075152",
+    "name": "Guruprasath K",
+    "email": "guruprasathk@gmail.com",
+    "message": "Testing mail\n\nLearn this all\n\nArrays\nStrings\nHash Maps\nStacks / Queues\nLinked Lists\nTrees\nBinary Trees\nBST\nGraphs\nHeaps\nRecursion\nBacktracking\nBinary Search\nSorting\nGreedy\nDynamic Programming\nTime & Space Complexity",
+    "receivedAt": "2026-08-24T08:44:35.152Z"
+  },
+  {
+    "id": "1787561419030",
+    "name": "guru",
+    "email": "demo@gmail.com",
+    "message": "hi",
+    "receivedAt": "2026-08-24T08:50:19.030Z"
+  },
+  {
+    "id": "1787562042672",
+    "name": "Guru Clean Test",
+    "email": "gurutest@gmail.com",
+    "message": "Testing clean backend architecture without FCM!",
+    "receivedAt": "2026-08-24T09:00:42.672Z"
+  }
+]
