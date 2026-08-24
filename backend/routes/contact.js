@@ -68,13 +68,21 @@ router.post("/", async (req, res) => {
       process.env.SMTP_PASS &&
       process.env.SMTP_PASS !== "your_app_password_here"
     ) {
-      const port = Number(process.env.SMTP_PORT) || 587;
+      const smtpPort = Number(process.env.SMTP_PORT) || 587;
       const transporter = nodemailer.createTransport({
-        service: "gmail",
+        host: process.env.SMTP_HOST || "smtp.gmail.com",
+        port: smtpPort,
+        secure: smtpPort === 465,
         auth: {
           user: process.env.SMTP_USER,
           pass: process.env.SMTP_PASS,
         },
+        tls: {
+          rejectUnauthorized: false,
+        },
+        connectionTimeout: 10000, // 10 sec connection timeout limit
+        greetingTimeout: 10000,
+        socketTimeout: 15000,
       });
 
       await transporter.sendMail({

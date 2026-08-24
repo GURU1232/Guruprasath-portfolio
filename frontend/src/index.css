@@ -990,11 +990,40 @@ main {
   color: var(--muted);
 }
 
-/* ---------- Responsive ---------- */
+/* ---------- Mobile Menu & Responsive ---------- */
+.mobile-menu {
+  margin-top: 10px;
+  background: var(--pill-bg);
+  border: 1px solid var(--pill-border);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-radius: 20px;
+  padding: 18px 20px !important;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.3);
+}
+
+.mobile-menu a {
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  padding: 10px 14px;
+  border-radius: 10px;
+  text-decoration: none;
+  display: block;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.mobile-menu a.nav-link-active {
+  background: var(--blue-glow);
+  color: var(--blue);
+  font-weight: 700;
+}
+
 @media (max-width: 900px) {
   .hero-grid,
   .contact-grid {
     grid-template-columns: 1fr;
+    gap: 32px;
   }
   .skills-grid,
   .projects-grid {
@@ -1006,13 +1035,123 @@ main {
   }
 }
 
-@media (max-width: 640px) {
-  .nav-links { display: none; }
-  .nav-toggle { display: block; }
-  .skills-grid,
-  .projects-grid {
-    grid-template-columns: 1fr;
+@media (max-width: 768px) {
+  html, body {
+    overflow-x: hidden;
+    width: 100%;
   }
-  .section { padding: 70px 0; }
-  .contact-info-grid { grid-template-columns: 1fr; }
+
+  .container {
+    padding: 0 16px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .section {
+    padding: 60px 0;
+  }
+
+  /* Navbar Mobile Layout */
+  .navbar-wrapper {
+    top: 12px;
+    width: calc(100% - 24px);
+  }
+
+  .navbar-wrapper.is-scrolled {
+    top: 8px;
+    width: calc(100% - 16px);
+  }
+
+  .logo-pill {
+    padding: 8px 12px;
+    gap: 8px;
+  }
+
+  .logo-text {
+    font-size: 0.92rem;
+  }
+
+  .logo-mark {
+    width: 26px;
+    height: 26px;
+    font-size: 1.15rem;
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  .nav-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+  }
+
+  .nav-cta {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+  }
+
+  .theme-toggle-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* Hero Section Mobile Layout */
+  .hero-title {
+    font-size: clamp(2.1rem, 8vw, 3rem);
+    line-height: 1.15;
+  }
+
+  .hero-ctas {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .hero-ctas a,
+  .hero-ctas button {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+
+  /* Terminal Card Mobile */
+  .terminal-card,
+  [class*="whoami"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Grids Mobile */
+  .skills-grid,
+  .projects-grid,
+  .contact-info-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  /* Contact Form Mobile */
+  .contact-form {
+    padding: 22px 16px;
+    border-radius: 16px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .contact-card {
+    padding: 14px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-text {
+    font-size: 0.85rem;
+  }
+
+  .nav-cta {
+    display: none; /* Hide HIRE ME button on very small screens to fit toggle & menu cleanly */
+  }
 }
