@@ -16,7 +16,7 @@ export const profile = {
   email: "guruprasathk03@gmail.com",
   linkedin: "https://linkedin.com/in/guruprasathfsd",
   linkedinLabel: "guruprasathfsd",
-  phone: "+91 93608 57345",
+  phone: "+91 9080594299",
   education: {
     degree: "Bachelor of Information Technology",
     institution: "Annamalai University, Chidambaram",
