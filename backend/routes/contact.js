@@ -57,62 +57,61 @@ router.post("/", async (req, res) => {
     receivedAt: new Date().toISOString(),
   };
 
-  // 1. SAVE MESSAGE TO DATABASE (data/messages.json)
+  // 1. SAVE MESSAGE TO DATABASE (data/messages.json) - INSTANT
   saveMessage(entry);
   console.log(`💾 Saved message from ${name} (${email}) to database.`);
 
-  // 2. SEND EMAIL NOTIFICATION (Nodemailer - 100% Free)
-  try {
-    if (
-      process.env.SMTP_USER &&
-      process.env.SMTP_PASS &&
-      process.env.SMTP_PASS !== "your_app_password_here"
-    ) {
-      const smtpPort = Number(process.env.SMTP_PORT) || 587;
-      const transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST || "smtp.gmail.com",
-        port: smtpPort,
-        secure: smtpPort === 465,
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
-        },
-        tls: {
-          rejectUnauthorized: false,
-        },
-        connectionTimeout: 10000, // 10 sec connection timeout limit
-        greetingTimeout: 10000,
-        socketTimeout: 15000,
-      });
-
-      await transporter.sendMail({
-        from: `"Portfolio Contact Form" <${process.env.SMTP_USER}>`,
-        to: process.env.CONTACT_RECEIVER || process.env.SMTP_USER,
-        replyTo: email,
-        subject: `New Message via Portfolio - ${name}`,
-        text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
-        html: `
-          <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #3b82f6; margin-top: 0;">New Message via Portfolio</h2>
-            <p><strong>Name:</strong> ${name}</p>
-            <p><strong>Sender Email:</strong> <a href="mailto:${email}">${email}</a></p>
-            <p><strong>Message Description:</strong></p>
-            <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid #3b82f6; color: #1e293b; white-space: pre-wrap;">${message}</div>
-            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
-            <p style="font-size: 0.8rem; color: #94a3b8;">Received at: ${new Date().toLocaleString()}</p>
-          </div>
-        `,
-      });
-      console.log(`✉️ Email notification sent to ${process.env.CONTACT_RECEIVER || process.env.SMTP_USER}`);
-    }
-  } catch (err) {
-    console.error("❌ Email send error:", err.message);
-  }
-
-  return res.status(200).json({
+  // Respond immediately to the user (Instant UI response < 0.1s)
+  res.status(200).json({
     success: true,
     message: "Thanks — your message has been saved and sent!",
   });
+
+  // 2. SEND EMAIL NOTIFICATION IN BACKGROUND
+  (async () => {
+    try {
+      const user = process.env.SMTP_USER ? process.env.SMTP_USER.trim() : "";
+      const rawPass = process.env.SMTP_PASS ? process.env.SMTP_PASS.trim() : "";
+      const pass = rawPass.replace(/\s+/g, ""); // strip spaces from Gmail App Password
+
+      if (user && pass && pass !== "your_app_password_here") {
+        console.log(`📧 Attempting to send email notification to ${process.env.CONTACT_RECEIVER || user}...`);
+
+        const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: user,
+            pass: pass,
+          },
+        });
+
+        const info = await transporter.sendMail({
+          from: `"Portfolio Contact Form" <${user}>`,
+          to: process.env.CONTACT_RECEIVER || user,
+          replyTo: email,
+          subject: `New Portfolio Message from ${name}`,
+          text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
+          html: `
+            <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: #3b82f6; margin-top: 0;">New Message via Portfolio</h2>
+              <p><strong>Name:</strong> ${name}</p>
+              <p><strong>Sender Email:</strong> <a href="mailto:${email}">${email}</a></p>
+              <p><strong>Message Description:</strong></p>
+              <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid #3b82f6; color: #1e293b; white-space: pre-wrap;">${message}</div>
+              <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+              <p style="font-size: 0.8rem; color: #94a3b8;">Received at: ${new Date().toLocaleString()}</p>
+            </div>
+          `,
+        });
+
+        console.log(`✅ Email notification sent successfully! MessageId: ${info.messageId}`);
+      } else {
+        console.log("⚠️ SMTP credentials not fully configured in environment.");
+      }
+    } catch (err) {
+      console.error("❌ Email send error:", err.message);
+    }
+  })();
 });
 
 // Endpoint to view stored messages

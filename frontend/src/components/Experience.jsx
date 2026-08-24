@@ -132,118 +132,149 @@ export default function Experience() {
             Professional <em>Timeline.</em>
           </h2>
 
-          {/* Timeline Rail */}
+          {/* Mobile Swipe Hint */}
+          <Typography
+            sx={{
+              display: { xs: "block", sm: "none" },
+              fontFamily: "var(--font-mono)",
+              fontSize: "0.72rem",
+              color: "var(--blue)",
+              textAlign: "right",
+              mb: -2,
+              mt: 1,
+              opacity: 0.9,
+            }}
+          >
+            ← Swipe sideways to view all →
+          </Typography>
+
+          {/* Timeline Rail (Draggable / Horizontal Scrollable on Mobile) */}
           <Box
             sx={{
-              position: "relative",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-start",
-              my: 5,
               width: "100%",
+              overflowX: "auto",
+              overflowY: "hidden",
+              WebkitOverflowScrolling: "touch",
+              py: 2,
+              my: { xs: 3, sm: 5 },
+              scrollbarWidth: "none",
+              "&::-webkit-scrollbar": { display: "none" },
             }}
           >
             <Box
               sx={{
-                position: "absolute",
-                top: `${LINE_TOP}px`,
-                left: 0,
-                right: 0,
-                height: "1.5px",
-                bgcolor: "#E5E7EB",
-                zIndex: 0,
+                position: "relative",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+                width: "100%",
+                minWidth: { xs: "540px", sm: "100%" },
+                px: { xs: 1, sm: 0 },
               }}
-            />
+            >
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: `${LINE_TOP}px`,
+                  left: 20,
+                  right: 20,
+                  height: "1.5px",
+                  bgcolor: "#E5E7EB",
+                  zIndex: 0,
+                }}
+              />
 
-            {experience.map((exp, index) => {
-              const isActive = activeIndex === index;
+              {experience.map((exp, index) => {
+                const isActive = activeIndex === index;
 
-              return (
-                <Box
-                  key={index}
-                  onClick={() => handleSelect(index)}
-                  sx={{
-                    cursor: "pointer",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    zIndex: 2,
-                    flex: 1,
-                    px: 0.5,
-                  }}
-                >
+                return (
                   <Box
+                    key={index}
+                    onClick={() => handleSelect(index)}
                     sx={{
-                      height: `${LABEL_BOX_HEIGHT}px`,
+                      cursor: "pointer",
                       display: "flex",
-                      alignItems: "flex-end",
-                      justifyContent: "center",
-                      mb: `${LABEL_MARGIN_BOTTOM}px`,
-                      width: "100%",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      zIndex: 2,
+                      flex: 1,
+                      minWidth: { xs: "120px", sm: "auto" },
+                      px: 0.5,
                     }}
                   >
+                    <Box
+                      sx={{
+                        height: `${LABEL_BOX_HEIGHT}px`,
+                        display: "flex",
+                        alignItems: "flex-end",
+                        justifyContent: "center",
+                        mb: `${LABEL_MARGIN_BOTTOM}px`,
+                        width: "100%",
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          fontFamily: "var(--font-mono)",
+                          fontWeight: 700,
+                          fontSize: "0.75rem",
+                          lineHeight: 1,
+                          textAlign: "center",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.08em",
+                          maxWidth: "100%",
+                          color: isActive ? "var(--text)" : "var(--muted)",
+                          opacity: isActive ? 1 : 0.75,
+                        }}
+                        noWrap
+                      >
+                        {exp.shortCompany || exp.company}
+                      </Typography>
+                    </Box>
+
+                    <Avatar
+                      sx={{
+                        width: ICON_SIZE,
+                        height: ICON_SIZE,
+                        transition: "all .3s ease",
+                        bgcolor: isActive ? "#0B1120" : "#ffffff",
+                        color: isActive ? "#2F80ED" : "#B7C0CC",
+                        border: isActive
+                          ? "1.5px solid #2F80ED"
+                          : "1.5px solid #E1E6EC",
+                        boxShadow: isActive
+                          ? "0 8px 20px rgba(47,128,237,.25)"
+                          : "none",
+                        "&:hover": {
+                          transform: "translateY(-2px)",
+                        },
+                      }}
+                    >
+                      {isActive ? (
+                        <BoltIcon sx={{ fontSize: 16 }} />
+                      ) : (
+                        <BusinessCenterOutlinedIcon sx={{ fontSize: 16 }} />
+                      )}
+                    </Avatar>
+
                     <Typography
                       sx={{
-                        fontFamily: "var(--font-mono)",
-                        fontWeight: 700,
-                        fontSize: "0.75rem",
-                        lineHeight: 1,
+                        fontFamily: "var(--font-display)",
+                        fontSize: "0.78rem",
+                        fontWeight: 600,
+                        lineHeight: 1.4,
                         textAlign: "center",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.08em",
+                        color: isActive ? "var(--blue)" : "var(--muted)",
+                        mt: 1.1,
                         maxWidth: "100%",
-                        color: isActive ? "var(--text)" : "var(--muted)",
-                        opacity: isActive ? 1 : 0.75,
                       }}
                       noWrap
                     >
-                      {exp.shortCompany || exp.company}
+                      {exp.role}
                     </Typography>
                   </Box>
-
-                  <Avatar
-                    sx={{
-                      width: ICON_SIZE,
-                      height: ICON_SIZE,
-                      transition: "all .3s ease",
-                      bgcolor: isActive ? "#0B1120" : "#ffffff",
-                      color: isActive ? "#2F80ED" : "#B7C0CC",
-                      border: isActive
-                        ? "1.5px solid #2F80ED"
-                        : "1.5px solid #E1E6EC",
-                      boxShadow: isActive
-                        ? "0 8px 20px rgba(47,128,237,.25)"
-                        : "none",
-                      "&:hover": {
-                        transform: "translateY(-2px)",
-                      },
-                    }}
-                  >
-                    {isActive ? (
-                      <BoltIcon sx={{ fontSize: 16 }} />
-                    ) : (
-                      <BusinessCenterOutlinedIcon sx={{ fontSize: 16 }} />
-                    )}
-                  </Avatar>
-
-                  <Typography
-                    sx={{
-                      fontFamily: "var(--font-display)",
-                      fontSize: "0.78rem",
-                      fontWeight: 600,
-                      lineHeight: 1.4,
-                      textAlign: "center",
-                      color: isActive ? "var(--blue)" : "var(--muted)",
-                      mt: 1.1,
-                      maxWidth: "100%",
-                    }}
-                    noWrap
-                  >
-                    {exp.role}
-                  </Typography>
-                </Box>
-              );
-            })}
+                );
+              })}
+            </Box>
           </Box>
 
           {/* Experience Card */}
