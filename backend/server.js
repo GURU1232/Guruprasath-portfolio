@@ -24,6 +24,10 @@ const contactLimiter = rateLimit({
   message: { error: "Too many messages sent. Please try again later." },
 });
 
+app.get("/", (req, res) => {
+  res.json({ message: "Guruprasath Portfolio API is running live!" });
+});
+
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });
 });
